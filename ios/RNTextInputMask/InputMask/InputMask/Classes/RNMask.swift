@@ -8,6 +8,7 @@
 
 import Foundation
 
+@objcMembers
 open class RNMask : NSObject {
     public static func maskValue(text: String, format: String, precision: Int) -> String {
         let strings = format.split(separator: "/").map(String.init)
