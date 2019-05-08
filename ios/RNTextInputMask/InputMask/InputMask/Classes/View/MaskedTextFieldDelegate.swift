@@ -419,7 +419,7 @@ internal extension MaskedTextFieldDelegate {
                 return
         }
         
-        if position > field.text!.characters.count {
+        if position > field.text!.count {
             return
         }
         
