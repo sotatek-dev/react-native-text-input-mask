@@ -67,6 +67,10 @@ export default class TextInputMask extends Component {
     if (Platform.OS === 'ios' && parseFloat(value) === 0 && value.indexOf('.') === -1) {
       return '0'
     }
+
+    if(value.charAt(0) === '0' && value.charAt(1) !== '.'){
+      return '0'
+    }
     
     if (value.charAt(value.length - 1) === ',') {
       value = value.substring(0, value.length -1) + '.';
