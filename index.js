@@ -34,7 +34,7 @@ export default class TextInputMask extends Component {
         this.props.value) {
       mask(this.props.mask, '' + this.props.value, this.precision, text => {
         this.input && this.input.setNativeProps({ text }),
-        this.setState({ value: text });
+            this.setState({ value: text });
       })
     }
 
@@ -52,9 +52,9 @@ export default class TextInputMask extends Component {
 
     if (nextProps.mask && (this.props.value !== nextProps.value)) {
       // mask(this.props.mask, '' + nextProps.value, this.precision, text => {
-        let text = this._formatNumber(nextProps.value, this.precision);
-        this.input && this.input.setNativeProps({ text })
-        this.setState({ value: text });
+      let text = this._formatNumber(nextProps.value, this.precision);
+      this.input && this.input.setNativeProps({ text })
+      this.setState({ value: text });
       // });
     }
   }
@@ -64,14 +64,18 @@ export default class TextInputMask extends Component {
       return value;
     }
 
-    if (parseFloat(value) === 0 && value.indexOf('.') === -1) {
+    if(value.charAt(0) === '.'){
+      return '0'
+    }
+
+    if ( parseFloat(value) === 0 && value.indexOf('.') === -1) {
       return '0'
     }
 
     if(value.charAt(0) === '0' && value.charAt(1) !== '.'){
       return '0'
     }
-    
+
     if (value.charAt(value.length - 1) === ',') {
       value = value.substring(0, value.length -1) + '.';
     }
@@ -113,27 +117,24 @@ export default class TextInputMask extends Component {
   render() {
     const props = Object.assign({}, this.props, { value: this.state.value });
     return (<TextInput
-      {...props}
-      ref={ref => {
-        this.input = ref
-        if (typeof this.props.refInput === 'function') {
-          this.props.refInput(ref)
-        }
-      }}
-      multiline={this.props.mask && Platform.OS === 'ios' ? false : this.props.multiline}
-      onChangeText={masked => {
-        if (this.props.mask) {
-          if (masked.length && masked.charAt(masked.length - 1) === ',') {
-            masked = masked.substring(0, masked.length -1) + '.';
-          }
-          let unmasked = masked.replace(/,/g, '');
-          unmasked = this._formatNumber(unmasked, this.precision);
-          unmasked = unmasked.replace(/,/g, '');
-          this.props.onChangeText && this.props.onChangeText(masked, unmasked)
-        } else {
-          this.props.onChangeText && this.props.onChangeText(masked)
-        }
-      }}
+    {...props}
+    ref={ref => {
+      this.input = ref
+      if (typeof this.props.refInput === 'function') {
+        this.props.refInput(ref)
+      }
+    }}
+    multiline={this.props.mask && Platform.OS === 'ios' ? false : this.props.multiline}
+    onChangeText={masked => {
+      if (this.props.mask) {
+        let unmasked = masked.replace(/,|-/g, '');
+        unmasked = this._formatNumber(unmasked, this.precision);
+        unmasked = unmasked.replace(/,|-/g, '');
+        this.props.onChangeText && this.props.onChangeText(masked.trim(), unmasked.trim())
+      } else {
+        this.props.onChangeText && this.props.onChangeText(masked.trim())
+      }
+    }}
     />);
   }
 }
