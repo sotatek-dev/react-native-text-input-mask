@@ -53,13 +53,7 @@ export default class TextInputMask extends Component {
     if (nextProps.mask && (this.props.value !== nextProps.value)) {
       let text = this._formatNumber(nextProps.value, this.precision) || '';
       this.input && this.input.setNativeProps({ text })
-      if(this.props.maxLength){
-        if(text.length <= this.props.maxLength){
-          this.setState({ value: text });
-        }
-      }else{
-        this.setState({ value: text });
-      }
+      this.setState({ value: text });
     }
   }
 
@@ -133,7 +127,7 @@ export default class TextInputMask extends Component {
       if (this.props.mask) {
         let unmasked = masked.replace(/[^0-9.]/g,'');
         unmasked = this._formatNumber(unmasked, this.precision);
-        unmasked = unmasked.replace(/[^0-9.]/g, '');
+        unmasked = unmasked.replace(/[^0-9.]/g, '').slice(0, this.props.number || 16);
         this.props.onChangeText && this.props.onChangeText(masked.trim(), unmasked.trim())
       } else {
         this.props.onChangeText && this.props.onChangeText(masked.trim())
