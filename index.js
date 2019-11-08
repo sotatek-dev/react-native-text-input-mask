@@ -51,9 +51,24 @@ export default class TextInputMask extends Component {
     }
 
     if (nextProps.mask && (this.props.value !== nextProps.value)) {
-      let text = this._formatNumber(nextProps.value, this.precision) || '';
+      let absValue = nextProps.value;
+      let negative = false;
+      if (nextProps.value && nextProps.value.indexOf('-') === 0) {
+        negative = true;
+        absValue = nextProps.value.substring(1);
+      }
+      
+      let text = this._formatNumber(absValue, this.precision) || '';
+      if (negative) text = `-${text}`;
       this.input && this.input.setNativeProps({ text })
-      this.setState({ value: text });
+
+      if(this.props.maxLength){	      
+        if(text.length <= this.props.maxLength){	
+          this.setState({ value: text });	
+        }	
+      }else{	
+        this.setState({ value: text });	
+      }
     }
   }
 
@@ -112,6 +127,62 @@ export default class TextInputMask extends Component {
     return formated;
   }
 
+  removeLeadingZeros= (value) => {
+    let result = value;
+    while (true) {
+      if (result.length < 2) break;
+
+      if (result.charAt(0) === '0' && result.charAt(1) !== '.') {
+        result = result.slice(1);
+      } else {
+        break;
+      }
+    }
+    return result;
+  }
+
+  trimNumber= (value) => {
+    const dotIndex = value.indexOf('.');
+    let maxLength = this.props.maxLength;
+    if (dotIndex > 0 && dotIndex < this.props.maxLength) {
+      maxLength ++;
+    } 
+    if (dotIndex === this.props.maxLength) {
+      maxLength--;
+    }
+    if (value.length > maxLength) {
+      value = value.substring(0, maxLength);
+    }
+    return value;
+  }
+
+  standardize= (value) => {
+    if (typeof value !== 'string') {
+      value = value.toString();
+    }
+
+    let result = value.trim().replace(/[^0-9\.]/g, '');
+    if (value.indexOf('-') === 0) {
+      result = '-' + result;
+    }
+
+    const dotIndex = result.indexOf('.');
+    if (dotIndex === 0) {
+      result = '0' + result;
+    } else if (dotIndex > 0) {
+      result =  result.substring(0, dotIndex + 1) 
+              + result.substring(dotIndex + 1).replace(/[\.]/g, '');
+      if (this.precision > 0) {
+        result = result.slice(0, dotIndex + 1 + this.precision);
+      } else {
+        result = result.slice(0, dotIndex);
+      }
+    }
+
+    result = this.removeLeadingZeros(result);
+    return this.trimNumber(result);
+  }
+
   render() {
     const props = Object.assign({}, this.props, { value: this.state.value });
     return (<TextInput
@@ -125,10 +196,21 @@ export default class TextInputMask extends Component {
     multiline={this.props.mask && Platform.OS === 'ios' ? false : this.props.multiline}
     onChangeText={masked => {
       if (this.props.mask) {
-        let unmasked = masked.replace(/[^0-9.]/g,'');
-        unmasked = this._formatNumber(unmasked, this.precision);
-        unmasked = unmasked.replace(/[^0-9.]/g, '').slice(0, this.props.number || 16);
-        this.props.onChangeText && this.props.onChangeText(masked.trim(), unmasked.trim())
+        // let unmasked = masked.replace(/[^0-9.]/g, '');
+        // unmasked = this._formatNumber(unmasked, this.precision);
+        // unmasked = unmasked.replace(/[^0-9.]/g, '').slice(0, this.props.number || 16);
+        let absMasked = masked;
+        let negative = false;
+        if (masked.indexOf('-') === 0) {
+          negative = true;
+          absMasked = masked.substring(1);
+        }
+        const standardizeValue = this.standardize(absMasked);
+        const formatedValue = this._formatNumber(standardizeValue, this.precision);
+       
+        this.props.onChangeText && this.props.onChangeText(
+          negative ? `-${formatedValue}` : formatedValue, 
+          negative ? `-${standardizeValue}` : standardizeValue)
       } else {
         this.props.onChangeText && this.props.onChangeText(masked.trim())
       }
