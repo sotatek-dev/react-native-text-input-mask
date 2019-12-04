@@ -134,8 +134,15 @@ public class RNTextInputMaskModule extends ReactContextBaseJavaModule {
     }
 
     public String format(String input, int precision) {
+        if (input == null || input.length() == 0) {
+            return input;
+        }
         String result = input;
-            input = input.replaceAll("[^\\d\\.]", "");
+        boolean isNegative = input.charAt(0) == '-';
+        if (isNegative) {
+            input = input.substring(1);
+        }
+        input = input.replaceAll("[^\\d\\.]", "");
         String naturalPart = "";
         String decimalPart = "";
 
@@ -164,8 +171,16 @@ public class RNTextInputMaskModule extends ReactContextBaseJavaModule {
             } else if (precision > 0 && input.endsWith(".")) {
               result += ".";
             }
+
+            if (isNegative) {
+                result = '-' + result;
+            }
         } catch (Exception e) {
             // noop
+        }
+
+        if (result.equals("--")) {
+            result = "-";
         }
 
         return result;
