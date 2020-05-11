@@ -7,11 +7,35 @@ Text input mask for React Native on iOS and Android.
 ![React Native Text Input Mask Android](https://s3.amazonaws.com/react-native-text-input-mask/react-native-text-input-mask-android-updated.gif)
 
 ## Setup
+Run 
+```bash
+npm install --save git+https://github.com/Sotatek-NamBui/react-native-text-input-mask.git
+```
+
+#### For RN < 0.60 
+
+Need link library 
 
 ```bash
-npm install --save react-native-text-input-mask
 react-native link react-native-text-input-mask
 ```
+#### For RN > 0.60 
+
+For iOS 
+ 
+Add following lines to your target in `Podfile`
+  ```
+ use_frameworks!
+ pod 'RNInputMask', :path => '../node_modules/react-native-text-input-mask/ios/RNTextInputMask/InputMask'
+ pod 'react-native-text-input-mask', :path => '../node_modules/react-native-text-input-mask'
+ ```
+
+Run following command
+ 
+ ```bash
+ npx pod-install
+ ```
+ 
 For Android it just works.
 
 For iOS you have to drag and drop InputMask framework to Embedded Binaries in General tab of Target and check ‘Yes’ in ‘Always Embed Swift Standard Libraries’ of Build Settings.
