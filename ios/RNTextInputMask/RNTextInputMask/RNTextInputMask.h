@@ -9,7 +9,7 @@
 #import <UIKit/UIKit.h>
 #import <React/RCTBridgeModule.h>
 
-@import InputMask;
+@import RNInputMask;
 
 @interface RNTextInputMask : NSObject <RCTBridgeModule, MaskedTextFieldDelegateListener>
 @end

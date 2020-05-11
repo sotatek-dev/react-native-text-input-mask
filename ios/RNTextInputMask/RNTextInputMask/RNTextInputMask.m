@@ -14,7 +14,7 @@
 #import "RCTUITextField.h"
 #import "RNTextInputMask.h"
 
-@import InputMask;
+@import RNInputMask;
 
 @implementation RNTextInputMask {
     NSMutableDictionary *masks;
@@ -43,11 +43,11 @@ RCT_EXPORT_METHOD(setMask:(nonnull NSNumber *)reactNode mask:(NSString *)mask pr
         dispatch_async(dispatch_get_main_queue(), ^{
             RCTSinglelineTextInputView *view = viewRegistry[reactNode];
             RCTUITextField *textView = [view backedTextInputView];
-            
+
             if (!masks) {
                 masks = [[NSMutableDictionary alloc] init];
             }
-            
+
             NSString *key = [NSString stringWithFormat:@"%@", reactNode];
             MaskedTextFieldDelegate* maskedDelegate = [[MaskedTextFieldDelegate alloc] initWithFormat:mask precision: precision];
             masks[key] = maskedDelegate;
@@ -91,10 +91,10 @@ RCT_EXPORT_METHOD(setMask:(nonnull NSNumber *)reactNode mask:(NSString *)mask pr
     if(textView.attributedText.string.length> 0){
         NSString *originalString = textView.attributedText.string;
         NSString *croppedText = [originalString substringToIndex:[originalString length] -1];
-        
+
         [textView setAttributedText:[[NSAttributedString alloc] initWithString:croppedText]];
         NSString *last = [originalString substringFromIndex:[originalString length] - 1];
-        
+
         [maskedDelegate textField:(UITextField*)textView
     shouldChangeCharactersInRange: (NSRange){[textView.attributedText.string length], 0}
                 replacementString:last];
