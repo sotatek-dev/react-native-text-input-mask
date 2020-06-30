@@ -57,17 +57,18 @@ export default class TextInputMask extends Component {
         negative = true;
         absValue = nextProps.value.substring(1);
       }
-      
+
       let text = this._formatNumber(absValue, this.precision) || '';
       if (negative) text = `-${text}`;
       this.input && this.input.setNativeProps({ text })
 
-      if(this.props.maxLength){	      
-        if(text.length <= this.props.maxLength){	
-          this.setState({ value: text });	
-        }	
-      }else{	
-        this.setState({ value: text });	
+      if(this.props.maxLength){
+        const replaceText = text.replace(/,/g, "").replace(/\./g, "");
+        if(replaceText.length <= this.props.maxLength){
+          this.setState({ value: text });
+        }
+      }else{
+        this.setState({ value: text });
       }
     }
   }
@@ -146,7 +147,7 @@ export default class TextInputMask extends Component {
     let maxLength = this.props.maxLength;
     if (dotIndex > 0 && dotIndex < this.props.maxLength) {
       maxLength ++;
-    } 
+    }
     if (dotIndex === this.props.maxLength) {
       maxLength--;
     }
@@ -170,7 +171,7 @@ export default class TextInputMask extends Component {
     if (dotIndex === 0) {
       result = '0' + result;
     } else if (dotIndex > 0) {
-      result =  result.substring(0, dotIndex + 1) 
+      result =  result.substring(0, dotIndex + 1)
               + result.substring(dotIndex + 1).replace(/[\.]/g, '');
       if (this.precision > 0) {
         result = result.slice(0, dotIndex + 1 + this.precision);
@@ -207,9 +208,9 @@ export default class TextInputMask extends Component {
         }
         const standardizeValue = this.standardize(absMasked);
         const formatedValue = this._formatNumber(standardizeValue, this.precision);
-       
+
         this.props.onChangeText && this.props.onChangeText(
-          negative ? `-${formatedValue}` : formatedValue, 
+          negative ? `-${formatedValue}` : formatedValue,
           negative ? `-${standardizeValue}` : standardizeValue)
       } else {
         this.props.onChangeText && this.props.onChangeText(masked.trim())
