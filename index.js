@@ -194,7 +194,7 @@ export default class TextInputMask extends Component {
         this.props.refInput(ref)
       }
     }}
-    multiline={this.props.mask && Platform.OS === 'ios' ? false : this.props.multiline}
+    // multiline={this.props.mask && Platform.OS === 'ios' ? false : this.props.multiline}
     onChangeText={masked => {
       if (this.props.mask) {
         // let unmasked = masked.replace(/[^0-9.]/g, '');
