@@ -63,7 +63,10 @@ export default class TextInputMask extends Component {
       this.input && this.input.setNativeProps({ text })
 
       if(this.props.maxLength){
-        const replaceText = text.replace(/,/g, "").replace(/\./g, "");
+        let replaceText = text;
+        if(this.props.ignoreComma){
+          replaceText = text.replace(/,/g, "").replace(/\./g, "");
+        }
         if(replaceText.length <= this.props.maxLength){
           this.setState({ value: text });
         }
