@@ -69,6 +69,8 @@ export default class TextInputMask extends Component {
         }
         if(replaceText.length <= this.props.maxLength){
           this.setState({ value: text });
+        } else {
+          this._onChangeText(this.state.value)
         }
       }else{
         this.setState({ value: text });
@@ -187,6 +189,28 @@ export default class TextInputMask extends Component {
     return this.trimNumber(result);
   }
 
+  _onChangeText = masked => {
+    if (this.props.mask) {
+      // let unmasked = masked.replace(/[^0-9.]/g, '');
+      // unmasked = this._formatNumber(unmasked, this.precision);
+      // unmasked = unmasked.replace(/[^0-9.]/g, '').slice(0, this.props.number || 16);
+      let absMasked = masked;
+      let negative = false;
+      if (masked.indexOf('-') === 0) {
+        negative = true;
+        absMasked = masked.substring(1);
+      }
+      const standardizeValue = this.standardize(absMasked);
+      const formatedValue = this._formatNumber(standardizeValue, this.precision);
+
+      this.props.onChangeText && this.props.onChangeText(
+          negative ? `-${formatedValue}` : formatedValue,
+          negative ? `-${standardizeValue}` : standardizeValue)
+    } else {
+      this.props.onChangeText && this.props.onChangeText(masked.trim())
+    }
+  }
+
   render() {
     const props = Object.assign({}, this.props, { value: this.state.value });
     return (<TextInput
@@ -198,27 +222,7 @@ export default class TextInputMask extends Component {
       }
     }}
     // multiline={this.props.mask && Platform.OS === 'ios' ? false : this.props.multiline}
-    onChangeText={masked => {
-      if (this.props.mask) {
-        // let unmasked = masked.replace(/[^0-9.]/g, '');
-        // unmasked = this._formatNumber(unmasked, this.precision);
-        // unmasked = unmasked.replace(/[^0-9.]/g, '').slice(0, this.props.number || 16);
-        let absMasked = masked;
-        let negative = false;
-        if (masked.indexOf('-') === 0) {
-          negative = true;
-          absMasked = masked.substring(1);
-        }
-        const standardizeValue = this.standardize(absMasked);
-        const formatedValue = this._formatNumber(standardizeValue, this.precision);
-
-        this.props.onChangeText && this.props.onChangeText(
-          negative ? `-${formatedValue}` : formatedValue,
-          negative ? `-${standardizeValue}` : standardizeValue)
-      } else {
-        this.props.onChangeText && this.props.onChangeText(masked.trim())
-      }
-    }}
+    onChangeText={this._onChangeText}
     />);
   }
 }
